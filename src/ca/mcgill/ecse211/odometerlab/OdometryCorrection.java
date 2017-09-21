@@ -22,6 +22,8 @@ public class OdometryCorrection extends Thread {
       correctionStart = System.currentTimeMillis();
 
       //TODO Place correction implementation here
+      
+      //CODE TO WRITE 
 
       // this ensure the odometry correction occurs only once every period
       correctionEnd = System.currentTimeMillis();

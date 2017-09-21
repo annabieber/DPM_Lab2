@@ -71,6 +71,7 @@ public class Odometer extends Thread {
   		dY = deltaD * Math.cos(theta);						// compute Y component of displacement
   		x = x + dX;											// update estimates of X and Y position
   		y = y + dY;	
+  		
         //theta = theta; // TODO replace example value
       }
 
@@ -96,7 +97,7 @@ public class Odometer extends Thread {
       if (update[1])
         position[1] = y;
       if (update[2])
-        position[2] = theta;
+        position[2] = (theta*360)/(2*Math.PI);
     }
   }
 
