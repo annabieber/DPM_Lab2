@@ -37,10 +37,10 @@ public class OdometryLab {
     // 4. Create a buffer for the sensor data
 
     @SuppressWarnings("resource") // Because we don't bother to close this resource
-    SensorModes usSensor = new EV3ColorSensor(usPort); // usSensor is the instance
-    SampleProvider usColor = usSensor.getMode("Red"); // usDistance provides samples from
+    SensorModes lsSensor = new EV3ColorSensor(usPort); // lsSensor is the instance
+    SampleProvider lsColor = lsSensor.getMode("Red"); // usDistance provides samples from
                                                               // this instance
-    float[] usData = new float[usColor.sampleSize()]; // usData is the buffer in which data are
+    float[] usData = new float[lsColor.sampleSize()]; // usData is the buffer in which data are
                                                          // returned
     final TextLCD t = LocalEV3.get().getTextLCD();
     Odometer odometer = new Odometer(leftMotor, rightMotor);
