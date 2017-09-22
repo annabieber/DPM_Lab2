@@ -18,7 +18,7 @@ public class Odometer extends Thread {
   private EV3LargeRegulatedMotor rightMotor;
   
   //class constants
-  public static final double WB=16.0;		// Wheelbase (cm)
+  public static final double WB=16;		// Wheelbase (cm)
   public static final double WR=2.1;		// Wheel radius (cm)
 
 
@@ -71,6 +71,11 @@ public class Odometer extends Thread {
   		dY = deltaD * Math.cos(theta);						// compute Y component of displacement
   		x = x + dX;											// update estimates of X and Y position
   		y = y + dY;	
+  		
+  		//do modulo of the values of angle
+  		if(theta >= 2*Math.PI) {
+  			theta = theta%Math.PI;
+  		}
   		
         //theta = theta; // TODO replace example value
       }
