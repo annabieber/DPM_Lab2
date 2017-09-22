@@ -1,17 +1,21 @@
-/*
+/*The implementation of the p-controller was done in a similar manner with the exception of the motor speed. It was calculated proportional to the distance error measured and subtracted for one motor and added to the other motor. 
  * OdometryCorrection.java
  */
 package ca.mcgill.ecse211.odometerlab;
 
 import lejos.hardware.Sound;
+import lejos.hardware.ev3.LocalEV3;
+import lejos.hardware.port.Port;
+import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.SensorModes;
+import lejos.robotics.SampleProvider;
 
 public class OdometryCorrection extends Thread {
-	
+
 	// Max light value reading for a grid line
 	private static final int LINE_LIGHT = 500; //NEED TO CHANGE
 	// The distance of the sensor from the wheel axle
-	private static final double SENSOR_OFFSET = 4.5;  //NEED TO CHANGE
+	private static final double SENSOR_OFFSET = 0;  //NEED TO CHANGE // entre 5.2 et 7.2
 	// Spacing of the tiles in centimeters
 	private static final double TILE_SPACING = 30.48;
 	// Half the said spacing
@@ -23,16 +27,25 @@ public class OdometryCorrection extends Thread {
 	private static final double FIVE_QUARTER_PI = 5 * ONE_QUARTER_PI;
 	private static final double SEVEN_QUARTER_PI = 7 * ONE_QUARTER_PI;
 
-	private static final long CORRECTION_PERIOD = 10;
+	private static final long CORRECTION_PERIOD = 25;
 	private Odometer odometer;
-	private float[] usData;
+	//private float[] usData;
+	private SampleProvider lsColor;
+	  private double error = 10.0;
+	  private static Port csPort = LocalEV3.get().getPort("S1");
+	  private SensorModes csSensor;
+	  private float[] lsData;
+	
 	//private SensorModes lsSensor;
 
 	// constructor
-	public OdometryCorrection(Odometer odometer, float[] usData) {
+	public OdometryCorrection(Odometer odometer) {
 		this.odometer = odometer;
-		this.usData = usData; 
-		//this.lsSensor = lsSensor;
+		this.csSensor= new EV3ColorSensor(csPort);
+		this.lsColor = csSensor.getMode("Red");
+		this.lsData = new float[csSensor.sampleSize()];
+		//this.usData = usData; 
+
 	}
 
 	// run method (required for Thread)
@@ -41,23 +54,30 @@ public class OdometryCorrection extends Thread {
 		// set the line as un-crossed
 		boolean crossed = false;
 
+		//if (crossed == true) {
+		//     Sound.playNote(Sound.FLUTE, 440, 250);
+		//}  
 		while (true) {
 			correctionStart = System.currentTimeMillis();
 
 			//TODO Place correction implementation here
 
 			//CODE TO WRITE 
-			int reading = (int)usData[0]; //lsSensor.getColorID(); need to get the color
-			System.out.println(reading);
+			
+			lsColor.fetchSample(lsData, 0);
+			
+			float reading = lsData[0];
+			//System.out.println(reading);			
+			
 
 			// check if the light value corresponds to a line and it has yet to be crossed
 			if (reading <= LINE_LIGHT && !crossed) {  
 				// wrap theta to 0 <= theta < 2i
 				double theta = odometer.getTheta();
 				// check which line direction we just crossed using the heading
-				
+
 				if (theta >= ONE_QUARTER_PI && theta < THREE_QUARTER_PI || theta >= FIVE_QUARTER_PI && theta < SEVEN_QUARTER_PI) {
-					Sound.playNote(Sound.FLUTE, 440, 250);
+					//Sound.playNote(Sound.FLUTE, 440, 250);
 					// cross horizontal line
 					double sensorYOffset = Math.sin(theta) * SENSOR_OFFSET;
 					// offset y to account for sensor distance
@@ -66,9 +86,9 @@ public class OdometryCorrection extends Thread {
 					y = Math.round((y + HALF_TILE_SPACING) / TILE_SPACING) * TILE_SPACING - HALF_TILE_SPACING;
 					// correct y, removing the offset
 					odometer.setY(y - sensorYOffset / 2);
-					
+
 				} else {
-					Sound.playNote(Sound.FLUTE, 880, 250);
+					//Sound.playNote(Sound.FLUTE, 880, 250);
 					// cross vertical line
 					double sensorXOffset = Math.cos(theta) * SENSOR_OFFSET;
 					// offset x to account for sensor distance
@@ -78,10 +98,10 @@ public class OdometryCorrection extends Thread {
 					// correct x, removing the offset
 					odometer.setX(x - sensorXOffset / 2);
 				}
-				
+
 				// set the line as crossed to prevent repeated events
 				crossed = true;
-				
+
 			} else {
 				// mark the line as done being crossed
 				crossed = false;
@@ -97,10 +117,10 @@ public class OdometryCorrection extends Thread {
 						// interrupted by another thread
 					}
 				}
-				
+
 			}
 		}
 	}
 }
-		
-	
+
+
