@@ -21,7 +21,7 @@ public class OdometryCorrection extends Thread {
 	// Max light value reading for a grid line
 	private static final double LINE_LIGHT = 0.15; //NEED TO CHANGE
 	// The distance of the sensor from the wheel axle
-	private static final double SENSOR_OFFSET = 6.5;  //NEED TO CHANGE // entre 5.2 et 7.2
+	private static final double SENSOR_OFFSET = 6.8;  //NEED TO CHANGE // entre 5.2 et 7.2
 	// Spacing of the tiles in centimeters
 	private static final double TILE_SPACING = 30.48;
 	// Half the said spacing
@@ -35,11 +35,8 @@ public class OdometryCorrection extends Thread {
 	private static final double FIVE_QUARTER_PI = 5 * ONE_QUARTER_PI;
 	private static final double SEVEN_QUARTER_PI = 7 * ONE_QUARTER_PI;
 
-	//private float lightValueCurrent,lightValuePrev;
-	//private double error = 15.0;
-	//private float[] data;
 
-	private static final long CORRECTION_PERIOD = 10;
+	private static final long CORRECTION_PERIOD = 15;
 	private Odometer odometer;
 	private SampleProvider lsColor;
 	private double error = 10.0;
@@ -47,15 +44,13 @@ public class OdometryCorrection extends Thread {
 	private SensorModes csSensor;
 	private float[] lsData;
 
-	//private SensorModes lsSensor;
-
+	
 	// constructor
 	public OdometryCorrection(Odometer odometer) {
 		this.odometer = odometer;
 		this.csSensor= new EV3ColorSensor(csPort);
 		this.lsColor = csSensor.getMode("Red");
 		this.lsData = new float[csSensor.sampleSize()];
-		//this.usData = usData; 
 
 	}
 
@@ -65,8 +60,6 @@ public class OdometryCorrection extends Thread {
 		long correctionStart, correctionEnd;
 		// set the line as un-crossed
 		boolean crossed = false;
-//		lsColor.fetchSample(lsData, 0); //get data from the sensor
-//		lightValuePrev = lsData[0]; //save previous value
 
 		while (true) {
 			correctionStart = System.currentTimeMillis();
