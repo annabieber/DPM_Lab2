@@ -13,23 +13,28 @@ import lejos.robotics.SampleProvider;
 public class OdometryCorrection extends Thread {
 
 	// Max light value reading for a grid line
-	private static final int LINE_LIGHT = 500; //NEED TO CHANGE
+	private static final double LINE_LIGHT = 0.15; //NEED TO CHANGE
 	// The distance of the sensor from the wheel axle
-	private static final double SENSOR_OFFSET = 0;  //NEED TO CHANGE // entre 5.2 et 7.2
+	private static final double SENSOR_OFFSET = 6.5;  //NEED TO CHANGE // entre 5.2 et 7.2
 	// Spacing of the tiles in centimeters
 	private static final double TILE_SPACING = 30.48;
 	// Half the said spacing
 	private static final double HALF_TILE_SPACING = TILE_SPACING / 2;
 	// various pi ratios
 	private static final double TWO_PI = Math.PI * 2;
+	private static final double PI_TWO = Math.PI / 2;
+	private static final double THREE_PI_TWO = 3 * PI_TWO;
 	private static final double ONE_QUARTER_PI = Math.PI / 4;
 	private static final double THREE_QUARTER_PI = 3 * ONE_QUARTER_PI;
 	private static final double FIVE_QUARTER_PI = 5 * ONE_QUARTER_PI;
 	private static final double SEVEN_QUARTER_PI = 7 * ONE_QUARTER_PI;
 
-	private static final long CORRECTION_PERIOD = 25;
+	private float lightValueCurrent,lightValuePrev;
+	  //private double error = 15.0;
+	  //private float[] data;
+	
+	private static final long CORRECTION_PERIOD = 10;
 	private Odometer odometer;
-	//private float[] usData;
 	private SampleProvider lsColor;
 	  private double error = 10.0;
 	  private static Port csPort = LocalEV3.get().getPort("S1");
@@ -53,6 +58,8 @@ public class OdometryCorrection extends Thread {
 		long correctionStart, correctionEnd;
 		// set the line as un-crossed
 		boolean crossed = false;
+		lsColor.fetchSample(lsData, 0); //get data from the sensor
+		lightValuePrev = lsData[0]; //save previous value
 
 		//if (crossed == true) {
 		//     Sound.playNote(Sound.FLUTE, 440, 250);
@@ -71,28 +78,28 @@ public class OdometryCorrection extends Thread {
 			
 
 			// check if the light value corresponds to a line and it has yet to be crossed
-			if (reading <= LINE_LIGHT && !crossed) {  
+			if (reading <= LINE_LIGHT && !crossed) { 
+				Sound.beep();
+				
 				// wrap theta to 0 <= theta < 2i
 				double theta = odometer.getTheta();
 				// check which line direction we just crossed using the heading
 
-				if (theta >= ONE_QUARTER_PI && theta < THREE_QUARTER_PI || theta >= FIVE_QUARTER_PI && theta < SEVEN_QUARTER_PI) {
-					//Sound.playNote(Sound.FLUTE, 440, 250);
+				if (theta < PI_TWO || theta >=  THREE_PI_TWO) {
 					// cross horizontal line
 					double sensorYOffset = Math.sin(theta) * SENSOR_OFFSET;
 					// offset y to account for sensor distance
-					double y = odometer.getY() + sensorYOffset;
+					double y = odometer.getY() - sensorYOffset;
 					// snap y to closest line
 					y = Math.round((y + HALF_TILE_SPACING) / TILE_SPACING) * TILE_SPACING - HALF_TILE_SPACING;
 					// correct y, removing the offset
 					odometer.setY(y - sensorYOffset / 2);
 
 				} else {
-					//Sound.playNote(Sound.FLUTE, 880, 250);
 					// cross vertical line
 					double sensorXOffset = Math.cos(theta) * SENSOR_OFFSET;
 					// offset x to account for sensor distance
-					double x = odometer.getX() + sensorXOffset;
+					double x = odometer.getX() - sensorXOffset;
 					// snap x to closest line
 					x = Math.round((x + HALF_TILE_SPACING) / TILE_SPACING) * TILE_SPACING - HALF_TILE_SPACING;
 					// correct x, removing the offset
@@ -105,6 +112,10 @@ public class OdometryCorrection extends Thread {
 			} else {
 				// mark the line as done being crossed
 				crossed = false;
+				
+				
+				
+
 
 				// this ensure the odometry correction occurs only once every period
 				correctionEnd = System.currentTimeMillis();
@@ -122,5 +133,6 @@ public class OdometryCorrection extends Thread {
 		}
 	}
 }
+
 
 
