@@ -1,3 +1,8 @@
+/* Student name: Francois-Eliott Roussseau and Anna Bieber
+ * Student ID: 260670000 and 260678856
+ * Group 52 
+ */
+
 // Lab2.java
 
 package ca.mcgill.ecse211.odometerlab;
@@ -22,7 +27,7 @@ public class OdometryLab {
 			new EV3LargeRegulatedMotor(LocalEV3.get().getPort("D"));
 
 	public static final double WHEEL_RADIUS = 2.1;
-	public static final double TRACK = 16.2; 
+	public static final double TRACK = 16; 
 
 	public static void main(String[] args) {
 		int buttonChoice;

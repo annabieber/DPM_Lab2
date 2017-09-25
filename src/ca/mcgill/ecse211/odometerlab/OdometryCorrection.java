@@ -1,3 +1,9 @@
+/* Student name: Francois-Eliott Roussseau and Anna Bieber
+ * Student ID: 260670000 and 260678856
+ * Group 52 
+ */
+
+
 /*The implementation of the p-controller was done in a similar manner with the exception of the motor speed. It was calculated proportional to the distance error measured and subtracted for one motor and added to the other motor. 
  * OdometryCorrection.java
  */
@@ -29,18 +35,18 @@ public class OdometryCorrection extends Thread {
 	private static final double FIVE_QUARTER_PI = 5 * ONE_QUARTER_PI;
 	private static final double SEVEN_QUARTER_PI = 7 * ONE_QUARTER_PI;
 
-	private float lightValueCurrent,lightValuePrev;
-	  //private double error = 15.0;
-	  //private float[] data;
-	
+	//private float lightValueCurrent,lightValuePrev;
+	//private double error = 15.0;
+	//private float[] data;
+
 	private static final long CORRECTION_PERIOD = 10;
 	private Odometer odometer;
 	private SampleProvider lsColor;
-	  private double error = 10.0;
-	  private static Port csPort = LocalEV3.get().getPort("S1");
-	  private SensorModes csSensor;
-	  private float[] lsData;
-	
+	private double error = 10.0;
+	private static Port csPort = LocalEV3.get().getPort("S1");
+	private SensorModes csSensor;
+	private float[] lsData;
+
 	//private SensorModes lsSensor;
 
 	// constructor
@@ -55,39 +61,37 @@ public class OdometryCorrection extends Thread {
 
 	// run method (required for Thread)
 	public void run() {
+		
 		long correctionStart, correctionEnd;
 		// set the line as un-crossed
 		boolean crossed = false;
-		lsColor.fetchSample(lsData, 0); //get data from the sensor
-		lightValuePrev = lsData[0]; //save previous value
+//		lsColor.fetchSample(lsData, 0); //get data from the sensor
+//		lightValuePrev = lsData[0]; //save previous value
 
-		//if (crossed == true) {
-		//     Sound.playNote(Sound.FLUTE, 440, 250);
-		//}  
 		while (true) {
 			correctionStart = System.currentTimeMillis();
 
 			//TODO Place correction implementation here
 
 			//CODE TO WRITE 
-			
+
 			lsColor.fetchSample(lsData, 0);
-			
+
 			float reading = lsData[0];
 			//System.out.println(reading);			
-			
+
 
 			// check if the light value corresponds to a line and it has yet to be crossed
 			if (reading <= LINE_LIGHT && !crossed) { 
 				Sound.beep();
-				
+
 				// wrap theta to 0 <= theta < 2i
 				double theta = odometer.getTheta();
 				// check which line direction we just crossed using the heading
 
 				if (theta < PI_TWO || theta >=  THREE_PI_TWO) {
-					// cross horizontal line
-					double sensorYOffset = Math.sin(theta) * SENSOR_OFFSET;
+					// cross vertical line
+					double sensorYOffset = Math.cos(theta) * SENSOR_OFFSET;
 					// offset y to account for sensor distance
 					double y = odometer.getY() - sensorYOffset;
 					// snap y to closest line
@@ -96,8 +100,8 @@ public class OdometryCorrection extends Thread {
 					odometer.setY(y - sensorYOffset / 2);
 
 				} else {
-					// cross vertical line
-					double sensorXOffset = Math.cos(theta) * SENSOR_OFFSET;
+					// cross horizontal line
+					double sensorXOffset = Math.sin(theta) * SENSOR_OFFSET;
 					// offset x to account for sensor distance
 					double x = odometer.getX() - sensorXOffset;
 					// snap x to closest line
@@ -112,9 +116,9 @@ public class OdometryCorrection extends Thread {
 			} else {
 				// mark the line as done being crossed
 				crossed = false;
-				
-				
-				
+
+
+
 
 
 				// this ensure the odometry correction occurs only once every period

@@ -1,3 +1,8 @@
+/* Student name: Francois-Eliott Roussseau and Anna Bieber
+ * Student ID: 260670000 and 260678856
+ * Group 52 
+ */
+
 /*
  * SquareDriver.java
  */
