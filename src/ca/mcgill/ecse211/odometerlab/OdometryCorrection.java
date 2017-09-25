@@ -36,7 +36,7 @@ public class OdometryCorrection extends Thread {
 	private static final double SEVEN_QUARTER_PI = 7 * ONE_QUARTER_PI;
 
 
-	private static final long CORRECTION_PERIOD = 15;
+	private static final long CORRECTION_PERIOD = 10;
 	private Odometer odometer;
 	private SampleProvider lsColor;
 	private double error = 10.0;
@@ -88,18 +88,21 @@ public class OdometryCorrection extends Thread {
 					// offset y to account for sensor distance
 					double y = odometer.getY() - sensorYOffset;
 					// snap y to closest line
-					y = Math.round((y + HALF_TILE_SPACING) / TILE_SPACING) * TILE_SPACING - HALF_TILE_SPACING;
+					//y = Math.round((y + HALF_TILE_SPACING) / TILE_SPACING) * TILE_SPACING - HALF_TILE_SPACING;
 					// correct y, removing the offset
-					odometer.setY(y - sensorYOffset / 2);
+					odometer.setY(y + sensorYOffset / 2);
 
 				} else {
 					// cross horizontal line
 					double sensorXOffset = Math.sin(theta) * SENSOR_OFFSET;
 					// offset x to account for sensor distance
 					double x = odometer.getX() - sensorXOffset;
+		
 					// snap x to closest line
-					x = Math.round((x + HALF_TILE_SPACING) / TILE_SPACING) * TILE_SPACING - HALF_TILE_SPACING;
+					//x = Math.round((x + HALF_TILE_SPACING) / TILE_SPACING) * TILE_SPACING - HALF_TILE_SPACING;
 					// correct x, removing the offset
+					
+
 					odometer.setX(x - sensorXOffset / 2);
 				}
 

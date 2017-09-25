@@ -24,7 +24,7 @@ public class Odometer extends Thread {
 	private EV3LargeRegulatedMotor rightMotor;
 
 	//class constants
-	public static final double WB=16;		// Wheelbase (cm)  // 17 au centre des roues // 18.8 exterieur des roues 
+	public static final double WB=16.2;		// Wheelbase (cm)  // 17 au centre des roues // 18.8 exterieur des roues 
 	public static final double WR=2.1;		// Wheel radius (cm)
 
 
