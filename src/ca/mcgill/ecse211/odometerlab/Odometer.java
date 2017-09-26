@@ -50,9 +50,7 @@ public class Odometer extends Thread {
 
 		while (true) {
 			updateStart = System.currentTimeMillis();
-			// TODO put (some of) your odometer code here
-			//method from prof
-
+			// TODO put (some of) your odometer code heres
 
 
 			synchronized (lock) {
@@ -62,6 +60,9 @@ public class Odometer extends Thread {
 				 * and theta in this block. Do not perform complex math
 				 * 
 				 */
+				//set the values on the screen from turn of wheels and calculations
+				//so that the values on the screen "match" the actual distances
+				
 				double distL, distR, deltaD, deltaT, dX, dY;
 
 				nowTachoL = leftMotor.getTachoCount();      		// get tacho counts
@@ -78,12 +79,16 @@ public class Odometer extends Thread {
 				x = x + dX;											// update estimates of X and Y position
 				y = y + dY;	
 
-				//do modulo of the values of angle
+				//When the value increases past 360, it should return to 0
 				if(theta >= 2*Math.PI) {
 					theta = theta%Math.PI;
 				}
+				
+			    //When the value decreases past 0, wrap to 359.9
+				else if(theta < 0) {
+					theta += 2*Math.PI; 
+				}
 
-				//theta = theta; // TODO replace example value
 			}
 
 			// this ensures that the odometer only runs once every period
